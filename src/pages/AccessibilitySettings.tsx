@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import type { FC } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -13,25 +14,32 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-const AccessibilitySettings: React.FC = () => {
+const AccessibilitySettings: FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const [highContrast, setHighContrast] = useState(
-    () => localStorage.getItem("artnode_highcontrast") === "true",
-  );
+  const [highContrast, setHighContrast] = useState(() => {
+    const val = localStorage.getItem("artnode_highcontrast") === "true";
+    document.documentElement.classList.toggle("high-contrast", val);
+    return val;
+  });
   const [tts, setTts] = useState(
     () => localStorage.getItem("artnode_tts") === "true",
   );
-  const [fontSize, setFontSize] = useState(
-    () => Number(localStorage.getItem("artnode_fontsize") || "16"),
+  const [fontSize, setFontSize] = useState(() => {
+    const val = Number(localStorage.getItem("artnode_fontsize") || "16");
+    document.documentElement.style.fontSize = `${val}px`;
+    return val;
+  });
+  const [haptics, setHaptics] = useState(
+    () => localStorage.getItem("artnode_haptics") !== "false",
   );
-  const [haptics, setHaptics] = useState(true);
 
   const toggleHighContrast = () => {
     const next = !highContrast;
     setHighContrast(next);
     localStorage.setItem("artnode_highcontrast", String(next));
+    document.documentElement.classList.toggle("high-contrast", next);
   };
 
   const toggleTts = () => {
@@ -49,24 +57,17 @@ const AccessibilitySettings: React.FC = () => {
   const handleFontSize = (val: number) => {
     setFontSize(val);
     localStorage.setItem("artnode_fontsize", String(val));
+    document.documentElement.style.fontSize = `${val}px`;
   };
 
   return (
-    <div
-      className="min-h-screen text-fg"
-      style={{ background: highContrast ? "#000000" : "#0a0f16" }}
-    >
+    <div className="min-h-screen bg-background text-fg">
       {/* Status bar spacer */}
       <div className="h-12 w-full" />
 
       {/* Navigation Header */}
       <header
-        className="px-6 py-4 flex items-center justify-between sticky top-0 z-10 backdrop-blur-md border-b border-fg/5"
-        style={{
-          background: highContrast
-            ? "rgba(0,0,0,0.9)"
-            : "rgba(10,15,22,0.85)",
-        }}
+        className="px-6 py-4 flex items-center justify-between sticky top-0 z-10 backdrop-blur-md border-b border-fg/5 bg-background/85"
       >
         <button
           onClick={() => navigate(id ? `/experience/${id}` : -1 as any)}
@@ -229,7 +230,12 @@ const AccessibilitySettings: React.FC = () => {
                 <Vibrate size={20} />
               </div>
               <button
-                onClick={() => setHaptics(!haptics)}
+                onClick={() => {
+                  const next = !haptics;
+                  setHaptics(next);
+                  localStorage.setItem("artnode_haptics", String(next));
+                  if (next && "vibrate" in navigator) navigator.vibrate(50);
+                }}
                 className={`w-11 h-6 rounded-full relative transition-colors ${
                   haptics ? "bg-accent" : "bg-fg/20"
                 }`}
@@ -268,7 +274,7 @@ const AccessibilitySettings: React.FC = () => {
       {/* Bottom Navigation (iOS style) */}
       <nav
         className="fixed bottom-0 left-0 right-0 border-t border-fg/5 pt-3 pb-8 px-8 flex items-center justify-around z-40 backdrop-blur-md"
-        style={{ background: "rgba(10,15,22,0.9)" }}
+        style={{ background: "color-mix(in srgb, var(--bg-color) 90%, transparent)" }}
       >
         <button
           onClick={() => id && navigate(`/experience/${id}`)}

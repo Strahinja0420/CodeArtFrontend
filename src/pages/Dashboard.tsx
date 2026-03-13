@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
+import type { FC, MouseEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus,
@@ -22,7 +23,7 @@ import CreateExperienceForm from "./CreateExperienceForm";
 import EditExperienceModal from "../components/EditExperienceModal";
 import type { Experience } from "../types/experience";
 
-const Dashboard: React.FC = () => {
+const Dashboard: FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { experiences, loading, refresh } = useExperiences();
@@ -60,7 +61,7 @@ const Dashboard: React.FC = () => {
     return matchesSearch && matchesCategory;
   });
 
-  const handleDelete = async (e: React.MouseEvent, id: string) => {
+  const handleDelete = async (e: MouseEvent, id: string) => {
     e.stopPropagation();
     if (!confirm("Delete this experience? This cannot be undone.")) return;
     try {
@@ -97,7 +98,7 @@ const Dashboard: React.FC = () => {
     : "AD";
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="h-screen bg-background flex overflow-hidden">
       <AdminSidebar />
 
       <main className="flex-1 flex flex-col min-w-0">
@@ -112,9 +113,6 @@ const Dashboard: React.FC = () => {
             <button className="p-2 text-fg/40 hover:text-fg hover:bg-fg/5 rounded-lg transition-colors">
               <Bell size={20} />
             </button>
-            <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent border border-accent/30">
-              <span className="text-xs font-bold">{initials}</span>
-            </div>
           </div>
         </header>
 
@@ -212,7 +210,7 @@ const Dashboard: React.FC = () => {
                         animate={{ opacity: 1 }}
                         transition={{ delay: idx * 0.04 }}
                         className="hover:bg-fg/[0.02] transition-colors cursor-pointer"
-                        onClick={() => navigate(`/experience/${exp.id}`)}
+                        onClick={() => navigate(`/welcome/${exp.id}`)}
                       >
                         <td className="px-6 py-4">
                           <div className="w-12 h-12 rounded-lg bg-fg/5 overflow-hidden border border-fg/10 shrink-0">
@@ -293,7 +291,7 @@ const Dashboard: React.FC = () => {
                                     <button
                                       onClick={() => {
                                         setOpenMenuId(null);
-                                        navigate(`/experience/${exp.id}`);
+                                        navigate(`/welcome/${exp.id}`);
                                       }}
                                       className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-fg/5 transition-colors text-left"
                                     >

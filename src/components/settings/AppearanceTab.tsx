@@ -1,11 +1,11 @@
-import React from "react";
+import type { FC } from "react";
 
 interface AppearanceTabProps {
   darkMode: boolean;
   setDarkMode: (value: boolean) => void;
 }
 
-export const AppearanceTab: React.FC<AppearanceTabProps> = ({
+export const AppearanceTab: FC<AppearanceTabProps> = ({
   darkMode,
   setDarkMode,
 }) => {

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import type { FC } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, Landmark } from "lucide-react";
@@ -12,7 +13,7 @@ const LANGUAGES = [
   { code: "es", label: "Spanish", emoji: "🇪🇸" },
 ];
 
-const WelcomePage: React.FC = () => {
+const WelcomePage: FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [selectedLang, setSelectedLang] = useState("en");

@@ -1,17 +1,17 @@
-import React from "react";
+import type { FC, ElementType } from "react";
 import { motion } from "framer-motion";
 
 interface StatCardProps {
   title: string;
   value: string | number;
-  icon: React.ElementType;
+  icon: ElementType;
   subtitle: string;
-  subtitleIcon?: React.ElementType;
+  subtitleIcon?: ElementType;
   subtitleColor?: string;
   delay?: number;
 }
 
-export const StatCard: React.FC<StatCardProps> = ({
+export const StatCard: FC<StatCardProps> = ({
   title,
   value,
   icon: Icon,

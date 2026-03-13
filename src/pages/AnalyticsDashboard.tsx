@@ -1,7 +1,6 @@
-import React from "react";
+import type { FC } from "react";
 import { motion } from "framer-motion";
 import { QrCode, Timer, Globe, TrendingUp, Download, Bell } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
 import AdminSidebar from "../components/AdminSidebar";
 import type { Experience } from "../types/experience";
 
@@ -9,8 +8,7 @@ import { useDashboardStats } from "../hooks/useDashboardStats";
 import { StatCard } from "../components/dashboard/StatCard";
 import { RecentExperiencesTable } from "../components/dashboard/RecentExperiencesTable";
 
-const AnalyticsDashboard: React.FC = () => {
-  const { user } = useAuth();
+const AnalyticsDashboard: FC = () => {
   const {
     loading,
     totalScans,
@@ -22,17 +20,8 @@ const AnalyticsDashboard: React.FC = () => {
     handleExport,
   } = useDashboardStats();
 
-  const initials = user?.name
-    ? user.name
-        .split(" ")
-        .map((n: string) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2)
-    : "AD";
-
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="h-screen bg-background flex overflow-hidden">
       <AdminSidebar />
 
       <main className="flex-1 flex flex-col min-w-0">
@@ -54,9 +43,6 @@ const AnalyticsDashboard: React.FC = () => {
               <Download size={16} />
               Export Report
             </button>
-            <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent border border-accent/30">
-              <span className="text-xs font-bold">{initials}</span>
-            </div>
           </div>
         </header>
 

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
+import type { FC, ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bell, User, Palette, Shield } from "lucide-react";
 import AdminSidebar from "../components/AdminSidebar";
@@ -11,7 +12,7 @@ import { NotificationsTab } from "../components/settings/NotificationsTab";
 
 type TabKey = "profile" | "appearance" | "security" | "notifications";
 
-const TAB_ITEMS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
+const TAB_ITEMS: { key: TabKey; label: string; icon: ReactNode }[] = [
   { key: "profile", label: "Institution Profile", icon: <User size={16} /> },
   { key: "appearance", label: "Appearance", icon: <Palette size={16} /> },
   { key: "security", label: "Security & Access", icon: <Shield size={16} /> },
@@ -22,7 +23,7 @@ const TAB_ITEMS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
   },
 ];
 
-const AdminSettings: React.FC = () => {
+const AdminSettings: FC = () => {
   const {
     user,
     avatarUploading,
@@ -38,7 +39,7 @@ const AdminSettings: React.FC = () => {
   const [name, setName] = useState(user?.name || "");
 
   // Auto-save name changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (name && name !== user?.name) {
       const timer = setTimeout(() => {
         handleSaveProfile(name, isDarkMode);
@@ -48,7 +49,7 @@ const AdminSettings: React.FC = () => {
   }, [name, isDarkMode, handleSaveProfile, user?.name]);
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="h-screen bg-background flex overflow-hidden">
       <AdminSidebar />
 
       <main className="flex-1 flex flex-col overflow-hidden">

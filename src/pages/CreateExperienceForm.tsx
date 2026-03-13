@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import type { FC } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
@@ -17,7 +18,7 @@ interface Props {
   onCancel: () => void;
 }
 
-const CreateExperienceForm: React.FC<Props> = ({ onSuccess, onCancel }) => {
+const CreateExperienceForm: FC<Props> = ({ onSuccess, onCancel }) => {
   const queryClient = useQueryClient();
   const [files, setFiles] = useState<{
     thumbnail: File | null;

@@ -1,4 +1,4 @@
-import React from "react";
+import type { FC } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -15,7 +15,7 @@ const loginSchema = z.object({
 
 type LoginForm = z.infer<typeof loginSchema>;
 
-const LoginPage: React.FC = () => {
+const LoginPage: FC = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const {
