@@ -1,15 +1,15 @@
-import React from "react";
+import type { FC, ElementType } from "react";
 import { CheckCircle2 } from "lucide-react";
 
 interface FileDropzoneProps {
   label: string;
-  icon: React.ElementType;
+  icon: ElementType;
   accept: string;
   file: File | null;
   onFileSelect: (file: File | null) => void;
 }
 
-export const FileDropzone: React.FC<FileDropzoneProps> = ({
+export const FileDropzone: FC<FileDropzoneProps> = ({
   label,
   icon: Icon,
   accept,

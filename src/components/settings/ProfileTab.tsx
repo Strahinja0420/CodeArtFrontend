@@ -1,4 +1,5 @@
-import React, { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
+import type { FC, ChangeEvent } from "react";
 import { Upload } from "lucide-react";
 
 interface ProfileTabProps {
@@ -7,10 +8,10 @@ interface ProfileTabProps {
   setName: (name: string) => void;
   email: string;
   avatarUploading: boolean;
-  onAvatarUpload: (e: React.ChangeEvent<HTMLInputElement>) => Promise<boolean>;
+  onAvatarUpload: (e: ChangeEvent<HTMLInputElement>) => Promise<boolean>;
 }
 
-export const ProfileTab: React.FC<ProfileTabProps> = ({
+export const ProfileTab: FC<ProfileTabProps> = ({
   user,
   name,
   setName,
@@ -19,9 +20,9 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
   onAvatarUpload,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [avatarError, setAvatarError] = React.useState(false);
+  const [avatarError, setAvatarError] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setAvatarError(false);
   }, [user?.avatarURL]);
 
@@ -34,7 +35,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
         .slice(0, 2)
     : "AD";
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const success = await onAvatarUpload(e);
     if (success && fileInputRef.current) {
       fileInputRef.current.value = "";

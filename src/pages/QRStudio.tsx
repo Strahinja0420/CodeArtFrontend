@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
+import type { FC, ChangeEvent } from "react";
 import { QRCode } from "react-qrcode-logo";
 import { motion } from "framer-motion";
 import { Upload, Check, Palette } from "lucide-react";
@@ -12,7 +13,7 @@ const FRAME_STYLES = [
   { key: "minimal", label: "Minimal", icon: "check_box_outline_blank" },
 ];
 
-const QRStudio: React.FC = () => {
+const QRStudio: FC = () => {
   const { user } = useAuth();
 
   // Customization State
@@ -55,16 +56,7 @@ const QRStudio: React.FC = () => {
     }
   }, [user]);
 
-  const initials = user?.name
-    ? user.name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2)
-    : "AD";
-
-  const handleLogoSelection = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLogoSelection = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -120,7 +112,7 @@ const QRStudio: React.FC = () => {
     frameStyle === "modern" ? 10 : frameStyle === "minimal" ? 0 : 5;
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="h-screen bg-background flex overflow-hidden">
       <AdminSidebar />
 
       <main className="flex-1 flex flex-col overflow-hidden">
@@ -136,9 +128,6 @@ const QRStudio: React.FC = () => {
               <Upload size={16} />
               Generate Batch
             </button>
-            <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center text-accent border border-accent/30">
-              <span className="text-xs font-bold">{initials}</span>
-            </div>
           </div>
         </header>
 

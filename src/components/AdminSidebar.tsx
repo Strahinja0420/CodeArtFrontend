@@ -1,4 +1,5 @@
-import React from "react";
+import { useState, useEffect } from "react";
+import type { FC } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
@@ -17,12 +18,12 @@ const navItems = [
   { to: "/settings", label: "Settings", icon: Settings, end: false },
 ];
 
-const AdminSidebar: React.FC = () => {
+const AdminSidebar: FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [avatarError, setAvatarError] = React.useState(false);
+  const [avatarError, setAvatarError] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setAvatarError(false);
   }, [user?.avatarURL]);
 
@@ -41,7 +42,7 @@ const AdminSidebar: React.FC = () => {
     : "AD";
 
   return (
-    <aside className="w-64 bg-card text-fg flex-shrink-0 flex flex-col border-r border-fg/5 min-h-screen">
+    <aside className="w-64 bg-card text-fg flex-shrink-0 flex flex-col border-r border-fg/5 h-screen sticky top-0">
       {/* Logo */}
       <div className="p-6 flex items-center gap-3 border-b border-fg/5">
         <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">

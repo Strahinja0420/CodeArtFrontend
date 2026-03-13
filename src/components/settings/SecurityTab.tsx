@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import type { FC } from "react";
 
 interface SecurityTabProps {
   passwordUpdating: boolean;
@@ -8,7 +9,7 @@ interface SecurityTabProps {
   ) => Promise<boolean>;
 }
 
-export const SecurityTab: React.FC<SecurityTabProps> = ({
+export const SecurityTab: FC<SecurityTabProps> = ({
   passwordUpdating,
   onPasswordUpdate,
 }) => {

@@ -1,4 +1,4 @@
-import React from "react";
+import type { FC } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { TrendingUp, Star, Eye } from "lucide-react";
@@ -9,7 +9,7 @@ interface Props {
   loading: boolean;
 }
 
-export const RecentExperiencesTable: React.FC<Props> = ({
+export const RecentExperiencesTable: FC<Props> = ({
   experiences,
   loading,
 }) => {
@@ -59,7 +59,7 @@ export const RecentExperiencesTable: React.FC<Props> = ({
               experiences.map((exp: Experience) => (
                 <tr
                   key={exp.id}
-                  onClick={() => navigate(`/experience/${exp.id}`)}
+                  onClick={() => navigate(`/welcome/${exp.id}`)}
                   className="hover:bg-fg/3 transition-colors cursor-pointer"
                 >
                   <td className="px-6 py-4">
@@ -114,7 +114,7 @@ export const RecentExperiencesTable: React.FC<Props> = ({
                     onClick={(e) => e.stopPropagation()}
                   >
                     <button
-                      onClick={() => navigate(`/experience/${exp.id}`)}
+                      onClick={() => navigate(`/welcome/${exp.id}`)}
                       title="View Experience"
                       className="p-2 text-fg/30 hover:text-accent transition-colors"
                     >

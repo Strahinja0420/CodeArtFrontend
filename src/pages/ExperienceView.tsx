@@ -1,8 +1,9 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import type { FC, DetailedHTMLProps, HTMLAttributes, CSSProperties } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  ChevronLeft,
+  Home,
   Share2,
   Play,
   Pause,
@@ -16,19 +17,22 @@ import {
 } from "lucide-react";
 import { useExperience } from "../hooks/useExperience";
 import { experienceService } from "../api/experience.service";
+import { useAuth } from "../context/AuthContext";
+import { getTranslations, langBcp47, type LangCode } from "../i18n/translations";
+import { translateFields } from "../i18n/translate";
 import "@google/model-viewer";
 
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      "model-viewer": React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement> & {
+      "model-viewer": DetailedHTMLProps<
+        HTMLAttributes<HTMLElement> & {
           src?: string;
           alt?: string;
           "camera-controls"?: boolean;
           "auto-rotate"?: boolean;
           "touch-action"?: string;
-          style?: React.CSSProperties;
+          style?: CSSProperties;
         },
         HTMLElement
       >;
@@ -36,13 +40,25 @@ declare global {
   }
 }
 
-const ExperienceView: React.FC = () => {
+const ExperienceView: FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { experience } = useExperience(id);
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const hasRecordedScan = useRef(false);
+
+  const t = getTranslations();
+  const lang = (localStorage.getItem("artnode_language") || "en") as LangCode;
+
+  // Translated dynamic content
+  const [translated, setTranslated] = useState<{
+    description?: string;
+    material?: string;
+    period?: string;
+    category?: string;
+  } | null>(null);
 
   // Feedback State
   const [userRating, setUserRating] = useState(0);
@@ -50,12 +66,54 @@ const ExperienceView: React.FC = () => {
   const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (id && !hasRecordedScan.current) {
       hasRecordedScan.current = true;
       experienceService.recordScan(id).catch(() => {});
     }
   }, [id]);
+
+  // Apply persisted accessibility settings
+  useEffect(() => {
+    const hc = localStorage.getItem("artnode_highcontrast") === "true";
+    document.documentElement.classList.toggle("high-contrast", hc);
+    const fs = Number(localStorage.getItem("artnode_fontsize") || "16");
+    document.documentElement.style.fontSize = `${fs}px`;
+  }, []);
+
+  // Translate dynamic content when experience loads
+  useEffect(() => {
+    if (!experience || lang === "en") return;
+    translateFields(
+      {
+        description: experience.description ?? "",
+        material: experience.material ?? "",
+        period: experience.period ?? "",
+        category: experience.category ?? "",
+      },
+      lang,
+    ).then(setTranslated);
+  }, [experience, lang]);
+
+  // TTS: read artifact content when experience loads
+  useEffect(() => {
+    if (!experience) return;
+    const ttsEnabled = localStorage.getItem("artnode_tts") === "true";
+    if (!ttsEnabled || !("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const text = [
+      experience.title,
+      experience.author ? `${t.by} ${experience.author}` : "",
+      experience.yearCreated ? `${t.from} ${experience.yearCreated}` : "",
+      experience.description ?? "",
+    ]
+      .filter(Boolean)
+      .join(". ");
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = langBcp47[lang] ?? "en-US";
+    window.speechSynthesis.speak(utterance);
+    return () => { window.speechSynthesis.cancel(); };
+  }, [experience]);
 
   const handleFeedbackSubmit = async () => {
     if (userRating === 0 || !id) return;
@@ -87,7 +145,7 @@ const ExperienceView: React.FC = () => {
   if (!experience)
     return (
       <div className="min-h-screen bg-background flex items-center justify-center font-bold">
-        Loading...
+        {t.loading}
       </div>
     );
 
@@ -95,14 +153,18 @@ const ExperienceView: React.FC = () => {
     <div className="min-h-screen bg-background text-fg p-4 max-w-2xl mx-auto pb-32">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
-        <button
-          onClick={() => navigate(-1)}
-          className="p-3 glass rounded-full hover:bg-fg/10 transition-all"
-        >
-          <ChevronLeft size={24} />
-        </button>
+        {user ? (
+          <button
+            onClick={() => navigate("/")}
+            className="p-3 glass rounded-full hover:bg-fg/10 transition-all"
+          >
+            <Home size={24} />
+          </button>
+        ) : (
+          <div className="w-12" />
+        )}
         <div className="px-4 py-2 glass rounded-full text-xs font-bold tracking-widest uppercase text-fg/40">
-          {experience.category || "GALLERY 04"}
+          {translated?.category || experience.category || t.gallery}
         </div>
         <button
           onClick={() => {
@@ -139,7 +201,7 @@ const ExperienceView: React.FC = () => {
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center text-fg/20 gap-4">
             <Box size={64} strokeWidth={1} />
-            <p className="font-medium italic">No 3D Visual Available</p>
+            <p className="font-medium italic">{t.no3DModel}</p>
           </div>
         )}
 
@@ -168,10 +230,10 @@ const ExperienceView: React.FC = () => {
             </div>
             <div>
               <p className="text-fg/40 text-sm font-bold uppercase tracking-widest mb-1">
-                Audio Guide
+                {t.audioGuide}
               </p>
               <h3 className="text-xl font-bold">
-                {experience.title} Narration
+                {experience.title} {t.narration}
               </h3>
             </div>
           </div>
@@ -221,31 +283,31 @@ const ExperienceView: React.FC = () => {
       >
         <h1 className="text-5xl font-bold mb-3">{experience.title}</h1>
         <p className="text-accent font-bold uppercase tracking-widest text-sm mb-8">
-          {experience.author || "Unknown Artist"} •{" "}
-          {experience.yearCreated || "Discovery"}
+          {experience.author || t.unknownArtist} •{" "}
+          {experience.yearCreated || t.discovery}
         </p>
 
         <div className="h-px bg-fg/10 w-24 mb-8" />
 
         <p className="text-fg/60 leading-relaxed text-lg mb-10">
-          {experience.description}
+          {translated?.description || experience.description}
         </p>
 
         <div className="grid grid-cols-2 gap-6">
           <div className="glass p-6 rounded-3xl">
             <p className="text-fg/30 text-xs font-bold uppercase mb-2">
-              Material
+              {t.material}
             </p>
             <p className="font-bold text-lg">
-              {experience.material || "Artifactual"}
+              {translated?.material || experience.material || t.artifactual}
             </p>
           </div>
           <div className="glass p-6 rounded-3xl">
             <p className="text-fg/30 text-xs font-bold uppercase mb-2">
-              Period
+              {t.period}
             </p>
             <p className="font-bold text-lg">
-              {experience.period || "Universal"}
+              {translated?.period || experience.period || t.universal}
             </p>
           </div>
         </div>
@@ -262,16 +324,14 @@ const ExperienceView: React.FC = () => {
             <div className="w-12 h-12 bg-emerald-500/20 text-emerald-500 rounded-full mx-auto flex items-center justify-center mb-3">
               <Check size={24} />
             </div>
-            <h4 className="font-bold text-lg mb-1">Thank you!</h4>
-            <p className="text-sm text-fg/40">
-              Your feedback helps others discover this piece.
-            </p>
+            <h4 className="font-bold text-lg mb-1">{t.thankYou}</h4>
+            <p className="text-sm text-fg/40">{t.feedbackThanks}</p>
           </div>
         ) : (
           <>
             <h4 className="font-bold text-lg mb-4 flex items-center gap-2">
               <Star className="text-amber-400 fill-amber-400" size={20} />
-              Rate this experience
+              {t.rateExperience}
             </h4>
             <div className="flex gap-3 mb-6 items-center">
               {[1, 2, 3, 4, 5].map((star) => (
@@ -291,9 +351,7 @@ const ExperienceView: React.FC = () => {
                 </button>
               ))}
               <span className="text-xs font-bold text-fg/30 uppercase ml-2">
-                {["Poor", "Decent", "Good", "Great", "Incredible"][
-                  userRating - 1
-                ] || "Select Rating"}
+                {t.ratings[userRating - 1] || t.selectRating}
               </span>
             </div>
             {userRating > 0 && (
@@ -302,7 +360,7 @@ const ExperienceView: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
               >
                 <textarea
-                  placeholder="Tell us what you discovered... (Optional)"
+                  placeholder={t.feedbackPlaceholder}
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   className="w-full bg-fg/5 border border-fg/10 rounded-2xl p-4 text-sm outline-none focus:border-accent/40 transition-colors mb-4 min-h-[100px] resize-none"
@@ -312,7 +370,7 @@ const ExperienceView: React.FC = () => {
                   disabled={isSubmittingFeedback}
                   className="w-full bg-accent text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-accent/90 transition-all disabled:opacity-50"
                 >
-                  {isSubmittingFeedback ? "Submitting..." : "Post Review"}
+                  {isSubmittingFeedback ? t.submitting : t.postReview}
                 </button>
               </motion.div>
             )}
@@ -324,14 +382,14 @@ const ExperienceView: React.FC = () => {
       <div className="fixed bottom-0 left-0 right-0 h-20 glass border-t border-fg/5 flex items-center justify-around px-8 pb-2">
         <button className="flex flex-col items-center gap-1 text-accent">
           <Info size={22} />
-          <span className="text-[10px] font-medium">Showcase</span>
+          <span className="text-[10px] font-medium">{t.showcase}</span>
         </button>
         <button
           onClick={() => navigate(`/experience/${id}/settings`)}
           className="flex flex-col items-center gap-1 text-fg/40 hover:text-accent transition-colors"
         >
           <Share2 size={22} />
-          <span className="text-[10px] font-medium">Settings</span>
+          <span className="text-[10px] font-medium">{t.settings}</span>
         </button>
       </div>
     </div>

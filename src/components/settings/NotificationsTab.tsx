@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import type { FC } from "react";
 
-export const NotificationsTab: React.FC = () => {
+export const NotificationsTab: FC = () => {
   const [notifications, setNotifications] = useState<Record<string, boolean>>(
     () => {
       const saved = localStorage.getItem("artnode_notifications");
