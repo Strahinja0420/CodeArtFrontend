@@ -94,10 +94,10 @@ const Dashboard: FC = () => {
 
       <main className="flex-1 flex flex-col min-w-0">
         {/* Top Header */}
-        <header className="h-16 bg-card border-b border-fg/5 flex items-center justify-between px-8 shrink-0">
+        <header className="h-16 bg-card border-b border-fg/5 flex items-center justify-between pl-14 pr-4 md:pl-8 md:pr-8 shrink-0">
           <div className="flex items-center gap-2 text-sm text-fg/40">
-            <span>Admin</span>
-            <span className="text-fg/20">›</span>
+            <span className="hidden sm:inline">Admin</span>
+            <span className="hidden sm:inline text-fg/20">›</span>
             <span className="font-semibold text-fg">Collections</span>
           </div>
           <div className="flex items-center gap-3">
@@ -108,9 +108,9 @@ const Dashboard: FC = () => {
         </header>
 
         {/* Content */}
-        <div className="flex-1 p-8 overflow-y-auto">
+        <div className="flex-1 p-4 md:p-8 overflow-y-auto">
           {/* Page Header */}
-          <div className="flex items-end justify-between mb-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-6 md:mb-8">
             <div>
               <h1 className="text-2xl font-bold mb-1">Collections Library</h1>
               <p className="text-fg/40 text-sm">
@@ -130,8 +130,8 @@ const Dashboard: FC = () => {
           </div>
 
           {/* Filters */}
-          <div className="flex gap-4 mb-6">
-            <div className="relative flex-1 max-w-sm">
+          <div className="flex flex-col sm:flex-row gap-4 mb-6">
+            <div className="relative flex-1 sm:max-w-sm">
               <Search
                 size={16}
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-fg/30"
@@ -164,7 +164,7 @@ const Dashboard: FC = () => {
           </div>
 
           {/* Table */}
-          <div className="bg-card rounded-xl border border-fg/5 overflow-visible">
+          <div className="bg-card rounded-xl border border-fg/5 overflow-x-auto">
             <table className="w-full text-left" style={{ borderCollapse: "separate", borderSpacing: 0 }}>
               <thead>
                 <tr className="bg-fg/[0.03] border-b border-fg/5">

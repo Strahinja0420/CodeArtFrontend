@@ -187,7 +187,7 @@ const ExperienceView: FC = () => {
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="relative h-[450px] glass rounded-[3rem] overflow-hidden mb-8"
+        className="relative h-[300px] sm:h-[450px] glass rounded-[2rem] sm:rounded-[3rem] overflow-hidden mb-8"
       >
         {experience.storageLocation ? (
           <model-viewer
@@ -222,11 +222,12 @@ const ExperienceView: FC = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass p-8 rounded-[2.5rem] mb-8"
+          className="glass p-5 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] mb-8"
         >
-          <div className="flex items-center gap-6 mb-8">
-            <div className="w-16 h-16 bg-accent rounded-3xl flex items-center justify-center shadow-lg shadow-accent/20">
-              <Headphones size={28} />
+          <div className="flex items-center gap-4 sm:gap-6 mb-6 sm:mb-8">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-accent rounded-2xl sm:rounded-3xl flex items-center justify-center shadow-lg shadow-accent/20">
+              <Headphones size={24} className="sm:hidden" />
+              <Headphones size={28} className="hidden sm:block" />
             </div>
             <div>
               <p className="text-fg/40 text-sm font-bold uppercase tracking-widest mb-1">
@@ -281,7 +282,7 @@ const ExperienceView: FC = () => {
         transition={{ delay: 0.2 }}
         className="px-2 mb-12"
       >
-        <h1 className="text-5xl font-bold mb-3">{experience.title}</h1>
+        <h1 className="text-3xl sm:text-5xl font-bold mb-3">{experience.title}</h1>
         <p className="text-accent font-bold uppercase tracking-widest text-sm mb-8">
           {experience.author || t.unknownArtist} •{" "}
           {experience.yearCreated || t.discovery}
@@ -293,8 +294,8 @@ const ExperienceView: FC = () => {
           {translated?.description || experience.description}
         </p>
 
-        <div className="grid grid-cols-2 gap-6">
-          <div className="glass p-6 rounded-3xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          <div className="glass p-4 sm:p-6 rounded-3xl">
             <p className="text-fg/30 text-xs font-bold uppercase mb-2">
               {t.material}
             </p>
@@ -302,7 +303,7 @@ const ExperienceView: FC = () => {
               {translated?.material || experience.material || t.artifactual}
             </p>
           </div>
-          <div className="glass p-6 rounded-3xl">
+          <div className="glass p-4 sm:p-6 rounded-3xl">
             <p className="text-fg/30 text-xs font-bold uppercase mb-2">
               {t.period}
             </p>
@@ -317,7 +318,7 @@ const ExperienceView: FC = () => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="glass p-8 rounded-[2.5rem] shadow-inner mb-4"
+        className="glass p-5 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] shadow-inner mb-4"
       >
         {feedbackSubmitted ? (
           <div className="text-center py-4">
@@ -379,7 +380,7 @@ const ExperienceView: FC = () => {
       </motion.div>
 
       {/* Bottom Nav */}
-      <div className="fixed bottom-0 left-0 right-0 h-20 glass border-t border-fg/5 flex items-center justify-around px-8 pb-2">
+      <div className="fixed bottom-0 left-0 right-0 h-20 glass border-t border-fg/5 flex items-center justify-around px-4 sm:px-8 pb-2">
         <button className="flex flex-col items-center gap-1 text-accent">
           <Info size={22} />
           <span className="text-[10px] font-medium">{t.showcase}</span>

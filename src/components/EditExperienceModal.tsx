@@ -148,11 +148,11 @@ const EditExperienceModal: FC<Props> = ({
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="glass p-8 rounded-4xl w-full max-w-4xl overflow-hidden relative z-10"
+      className="glass p-4 sm:p-8 rounded-3xl sm:rounded-4xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative z-10"
     >
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6 sm:mb-8">
         <div>
-          <h2 className="text-3xl font-bold">Edit Experience</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold">Edit Experience</h2>
           <p className="text-fg/40">Update artifact details and media</p>
         </div>
         <button

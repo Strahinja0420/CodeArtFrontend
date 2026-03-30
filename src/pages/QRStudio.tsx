@@ -117,23 +117,24 @@ const QRStudio: FC = () => {
 
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Top Header */}
-        <header className="h-16 bg-card border-b border-fg/5 flex items-center justify-between px-8 shrink-0">
+        <header className="h-16 bg-card border-b border-fg/5 flex items-center justify-between pl-14 pr-4 md:pl-8 md:pr-8 shrink-0">
           <div className="flex items-center gap-2 text-sm text-fg/40">
-            <span>Admin</span>
-            <span className="text-fg/20">›</span>
+            <span className="hidden sm:inline">Admin</span>
+            <span className="hidden sm:inline text-fg/20">›</span>
             <span className="font-semibold text-fg">QR Studio</span>
           </div>
           <div className="flex items-center gap-3">
             <button className="bg-accent text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-accent/90 transition-all">
               <Upload size={16} />
-              Generate Batch
+              <span className="hidden sm:inline">Generate Batch</span>
+              <span className="sm:hidden">Generate</span>
             </button>
           </div>
         </header>
 
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex flex-col md:flex-row overflow-x-hidden overflow-y-auto md:overflow-y-hidden">
           {/* Left: Customization Panel */}
-          <aside className="w-96 border-r border-fg/5 bg-card flex flex-col overflow-y-auto">
+          <aside className="shrink-0 md:w-96 border-b md:border-b-0 md:border-r border-fg/5 bg-card flex flex-col md:overflow-y-auto">
             <div className="p-6 border-b border-fg/5">
               <h2 className="font-bold text-fg">Customization Tools</h2>
               <p className="text-xs text-fg/40 mt-1">
@@ -405,7 +406,7 @@ const QRStudio: FC = () => {
           </aside>
 
           {/* Right: Live Preview Canvas */}
-          <section className="flex-1 bg-background p-8 flex flex-col relative overflow-y-auto">
+          <section className="md:flex-1 bg-background p-4 md:p-8 flex flex-col relative md:overflow-y-auto">
             {/* Preview Title */}
             <div className="mb-6 z-10">
               <h3 className="text-xs font-semibold text-fg/40 uppercase tracking-widest">
@@ -420,7 +421,7 @@ const QRStudio: FC = () => {
             </div>
 
             {/* QR Canvas */}
-            <div className="flex-1 flex flex-col items-center justify-center min-h-[400px]">
+            <div className="md:flex-1 flex flex-col items-center md:justify-center py-6 md:py-0 md:min-h-[400px]">
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -480,7 +481,7 @@ const QRStudio: FC = () => {
         </div>
 
         {/* Status Footer */}
-        <footer className="h-10 bg-card border-t border-fg/5 px-6 flex items-center justify-between text-xs text-fg/30 shrink-0">
+        <footer className="h-10 bg-card border-t border-fg/5 px-4 md:px-6 hidden md:flex items-center justify-between text-xs text-fg/30 shrink-0">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500" />

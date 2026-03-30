@@ -54,16 +54,16 @@ const AdminSettings: FC = () => {
 
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Top Header */}
-        <header className="h-16 bg-card border-b border-fg/5 flex items-center justify-between px-8 shrink-0">
+        <header className="h-16 bg-card border-b border-fg/5 flex items-center justify-between pl-14 pr-4 md:pl-8 md:pr-8 shrink-0">
           <div className="flex items-center gap-2 text-sm text-fg/40">
-            <span>Admin</span>
-            <span className="text-fg/20">›</span>
+            <span className="hidden sm:inline">Admin</span>
+            <span className="hidden sm:inline text-fg/20">›</span>
             <span className="font-semibold text-fg">Settings</span>
           </div>
         </header>
 
         {/* Settings Body */}
-        <div className="flex-1 p-8 overflow-y-auto">
+        <div className="flex-1 p-4 md:p-8 overflow-y-auto">
           <div className="max-w-4xl mx-auto space-y-8">
             <div>
               <h1 className="text-2xl font-bold">Institution Settings</h1>
@@ -72,14 +72,14 @@ const AdminSettings: FC = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               {/* Tab Nav */}
-              <nav className="space-y-1">
+              <nav className="flex md:flex-col gap-1 overflow-x-auto pb-2 md:pb-0">
                 {TAB_ITEMS.map(({ key, label, icon }) => (
                   <button
                     key={key}
                     onClick={() => setActiveTab(key)}
-                    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all text-left ${
+                    className={`whitespace-nowrap md:w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all text-left ${
                       activeTab === key
                         ? "bg-card text-accent shadow-sm border border-accent/10"
                         : "text-fg/50 hover:text-fg hover:bg-fg/5"

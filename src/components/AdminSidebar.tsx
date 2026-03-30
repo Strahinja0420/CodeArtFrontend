@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import type { FC } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
   Landmark,
@@ -9,6 +9,8 @@ import {
   QrCode,
   Settings,
   LogOut,
+  Menu,
+  X,
 } from "lucide-react";
 
 const navItems = [
@@ -21,7 +23,14 @@ const navItems = [
 const AdminSidebar: FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [avatarError, setAvatarError] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Close mobile sidebar on navigation
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
 
   useEffect(() => {
     setAvatarError(false);
@@ -42,16 +51,49 @@ const AdminSidebar: FC = () => {
     : "AD";
 
   return (
-    <aside className="w-64 bg-card text-fg flex-shrink-0 flex flex-col border-r border-fg/5 h-screen sticky top-0">
-      {/* Logo */}
-      <div className="p-6 flex items-center gap-3 border-b border-fg/5">
-        <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
-          <Landmark size={18} className="text-fg" />
+    <>
+      {/* Mobile hamburger */}
+      {!mobileOpen && (
+        <button
+          onClick={() => setMobileOpen(true)}
+          className="md:hidden fixed top-3.5 left-4 z-50 p-2 bg-card/90 backdrop-blur-sm rounded-lg border border-fg/10 shadow-lg text-fg/60 hover:text-fg transition-colors"
+          aria-label="Open menu"
+        >
+          <Menu size={20} />
+        </button>
+      )}
+
+      {/* Mobile backdrop */}
+      {mobileOpen && (
+        <div
+          onClick={() => setMobileOpen(false)}
+          className="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+        />
+      )}
+
+      <aside
+        className={`w-64 bg-card text-fg flex-shrink-0 flex flex-col border-r border-fg/5 h-screen fixed md:sticky top-0 z-50 transition-transform duration-300 ease-in-out ${
+          mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+        }`}
+      >
+        {/* Logo */}
+        <div className="p-6 flex items-center justify-between border-b border-fg/5">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
+              <Landmark size={18} className="text-fg" />
+            </div>
+            <span className="text-xl font-bold tracking-tight">
+              Art<span className="text-accent">Node</span>
+            </span>
+          </div>
+          <button
+            onClick={() => setMobileOpen(false)}
+            className="md:hidden p-1 text-fg/40 hover:text-fg transition-colors"
+            aria-label="Close menu"
+          >
+            <X size={20} />
+          </button>
         </div>
-        <span className="text-xl font-bold tracking-tight">
-          Art<span className="text-accent">Node</span>
-        </span>
-      </div>
 
       {/* Navigation */}
       <nav className="flex-1 px-4 py-4 space-y-1">
@@ -107,6 +149,7 @@ const AdminSidebar: FC = () => {
         </div>
       </div>
     </aside>
+    </>
   );
 };
 

@@ -26,28 +26,29 @@ const AnalyticsDashboard: FC = () => {
 
       <main className="flex-1 flex flex-col min-w-0">
         {/* Top Bar */}
-        <header className="h-16 bg-card border-b border-fg/5 flex items-center justify-between px-8 shrink-0">
+        <header className="h-16 bg-card border-b border-fg/5 flex items-center justify-between pl-14 pr-4 md:pl-8 md:pr-8 shrink-0">
           <div className="flex items-center gap-2 text-sm text-fg/40">
-            <span>Analytics</span>
-            <span className="text-fg/20">›</span>
+            <span className="hidden sm:inline">Analytics</span>
+            <span className="hidden sm:inline text-fg/20">›</span>
             <span className="font-semibold text-fg">Overview</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3">
             <button className="p-2 text-fg/40 hover:text-fg hover:bg-fg/5 rounded-lg transition-colors">
               <Bell size={20} />
             </button>
             <button
               onClick={handleExport}
-              className="flex items-center gap-2 bg-accent hover:bg-accent/90 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer"
+              className="flex items-center gap-2 bg-accent hover:bg-accent/90 text-white px-3 md:px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer"
             >
               <Download size={16} />
-              Export Report
+              <span className="hidden sm:inline">Export Report</span>
+              <span className="sm:hidden">Export</span>
             </button>
           </div>
         </header>
 
         {/* Dashboard Body */}
-        <div className="flex-1 p-8 overflow-y-auto">
+        <div className="flex-1 p-4 md:p-8 overflow-y-auto">
           {/* KPI Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <StatCard
