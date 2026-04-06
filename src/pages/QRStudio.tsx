@@ -7,6 +7,17 @@ import AdminSidebar from "../components/AdminSidebar";
 import { useAuth } from "../context/AuthContext";
 import { userService } from "../api/user.service";
 
+type QrStyleConfig = {
+  fgColor?: string;
+  bgColor?: string;
+  eyeColor?: string;
+  frameText?: string;
+  frameStyle?: string;
+  qrStyleData?: "squares" | "dots" | "fluid";
+  logoSize?: number;
+  logoPaddingStyle?: "circle" | "square";
+};
+
 const FRAME_STYLES = [
   { key: "classic", label: "Classic", icon: "crop_square" },
   { key: "modern", label: "Modern", icon: "rounded_corner" },
@@ -38,23 +49,32 @@ const QRStudio: FC = () => {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  // Load user's existing QR style config on mount
+  // Load user's existing QR style config on mount by fetching full user data
   useEffect(() => {
-    if (user?.qrStyle?.config) {
-      const config = user.qrStyle.config as any;
-      if (config.fgColor) setFgColor(config.fgColor);
-      if (config.bgColor) setBgColor(config.bgColor);
-      if (config.eyeColor) setEyeColor(config.eyeColor);
-      if (config.frameText !== undefined) setFrameText(config.frameText);
-      if (config.frameStyle) setFrameStyle(config.frameStyle);
-      if (config.qrStyleData) setQrStyleData(config.qrStyleData);
-      if (config.logoSize) setLogoSize(config.logoSize);
-      if (config.logoPaddingStyle) setLogoPaddingStyle(config.logoPaddingStyle);
-    }
-    if (user?.qrStyle?.logoURL) {
-      setLogoPreview(user.qrStyle.logoURL);
-    }
-  }, [user]);
+    if (!user?.id) return;
+    let cancelled = false;
+    const loadQrStyle = async () => {
+      try {
+        const res: any = await userService.getById(user.id);
+        const fullUser = res.data?.data || res.data;
+        if (cancelled || !fullUser?.qrStyle) return;
+        const config: QrStyleConfig = fullUser.qrStyle.config || {};
+        if (config.fgColor) setFgColor(config.fgColor);
+        if (config.bgColor) setBgColor(config.bgColor);
+        if (config.eyeColor) setEyeColor(config.eyeColor);
+        if (config.frameText !== undefined) setFrameText(config.frameText);
+        if (config.frameStyle) setFrameStyle(config.frameStyle);
+        if (config.qrStyleData) setQrStyleData(config.qrStyleData);
+        if (config.logoSize) setLogoSize(config.logoSize);
+        if (config.logoPaddingStyle) setLogoPaddingStyle(config.logoPaddingStyle);
+        if (fullUser.qrStyle.logoURL) setLogoPreview(fullUser.qrStyle.logoURL);
+      } catch {
+        // Silently fail — defaults are fine
+      }
+    };
+    loadQrStyle();
+    return () => { cancelled = true; };
+  }, [user?.id]);
 
   const handleLogoSelection = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -96,7 +116,7 @@ const QRStudio: FC = () => {
             eyeRadius:
               frameStyle === "modern" ? 10 : frameStyle === "minimal" ? 0 : 5,
           },
-          logoURL: finalLogoUrl,
+          logoURL: finalLogoUrl || undefined,
         },
       });
       setSaved(true);
@@ -406,7 +426,7 @@ const QRStudio: FC = () => {
           </aside>
 
           {/* Right: Live Preview Canvas */}
-          <section className="md:flex-1 bg-background p-4 md:p-8 flex flex-col relative md:overflow-y-auto">
+          <section className="md:flex-1 bg-background p-4 md:p-8 flex flex-col relative md:overflow-hidden">
             {/* Preview Title */}
             <div className="mb-6 z-10">
               <h3 className="text-xs font-semibold text-fg/40 uppercase tracking-widest">

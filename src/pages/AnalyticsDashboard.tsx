@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import { motion } from "framer-motion";
-import { QrCode, Timer, Globe, TrendingUp, Download, Bell } from "lucide-react";
+import { QrCode, Timer, Globe, TrendingUp, Download } from "lucide-react";
 import AdminSidebar from "../components/AdminSidebar";
 import type { Experience } from "../types/experience";
 
@@ -33,9 +33,6 @@ const AnalyticsDashboard: FC = () => {
             <span className="font-semibold text-fg">Overview</span>
           </div>
           <div className="flex items-center gap-2 md:gap-3">
-            <button className="p-2 text-fg/40 hover:text-fg hover:bg-fg/5 rounded-lg transition-colors">
-              <Bell size={20} />
-            </button>
             <button
               onClick={handleExport}
               className="flex items-center gap-2 bg-accent hover:bg-accent/90 text-white px-3 md:px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer"

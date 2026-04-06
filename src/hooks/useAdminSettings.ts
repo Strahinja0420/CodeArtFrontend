@@ -3,7 +3,7 @@ import type { ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { userService } from "../api/user.service";
-import { authService } from "../api/auth.service";
+
 
 export const useAdminSettings = () => {
   const { user, login, logout, isDarkMode, setDarkMode } = useAuth();
@@ -20,14 +20,12 @@ export const useAdminSettings = () => {
     try {
       await userService.update(user.id, { name, dark: darkMode });
 
-      // Refresh user context so the updated name reflects globally
-      const profileRes: any = await authService.getProfile();
-      if (profileRes.data?.user) {
-        login(
-          profileRes.data.user.token || localStorage.getItem("token") || "",
-          profileRes.data.user,
-        );
-      }
+      // Update user context directly with the new values
+      login(localStorage.getItem("token") || "", {
+        ...user,
+        name,
+        dark: darkMode,
+      });
 
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
@@ -51,16 +49,8 @@ export const useAdminSettings = () => {
         login(localStorage.getItem("token") || "", {
           ...user,
           avatarURL: newAvatarURL,
+          dark: isDarkMode,
         });
-      }
-
-      // Refresh user context so the updated avatar reflects from server
-      const profileRes: any = await authService.getProfile();
-      if (profileRes.data?.user) {
-        login(
-          profileRes.data.user.token || localStorage.getItem("token") || "",
-          profileRes.data.user,
-        );
       }
     } catch (err) {
       alert("Failed to upload avatar");

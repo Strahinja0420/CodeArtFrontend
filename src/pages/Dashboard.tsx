@@ -1,12 +1,12 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import type { FC, MouseEvent } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus,
   Search,
   MoreVertical,
   QrCode,
-  Bell,
   Trash2,
   Pencil,
   RefreshCw,
@@ -32,7 +32,18 @@ const Dashboard: FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [menuPos, setMenuPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const toggleMenu = useCallback((expId: string, buttonEl: HTMLButtonElement) => {
+    if (openMenuId === expId) {
+      setOpenMenuId(null);
+      return;
+    }
+    const rect = buttonEl.getBoundingClientRect();
+    setMenuPos({ top: rect.bottom + 4, left: rect.right - 192 }); // 192 = w-48
+    setOpenMenuId(expId);
+  }, [openMenuId]);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -101,9 +112,6 @@ const Dashboard: FC = () => {
             <span className="font-semibold text-fg">Collections</span>
           </div>
           <div className="flex items-center gap-3">
-            <button className="p-2 text-fg/40 hover:text-fg hover:bg-fg/5 rounded-lg transition-colors">
-              <Bell size={20} />
-            </button>
           </div>
         </header>
 
@@ -257,65 +265,14 @@ const Dashboard: FC = () => {
                             </button>
 
                             {/* More dropdown */}
-                            <div
-                              className="relative"
-                              ref={openMenuId === exp.id ? menuRef : undefined}
-                            >
+                            <div className="relative">
                               <button
-                                onClick={() =>
-                                  setOpenMenuId(openMenuId === exp.id ? null : exp.id)
-                                }
+                                onClick={(e) => toggleMenu(exp.id, e.currentTarget)}
                                 title="More options"
                                 className="p-1.5 text-fg/30 hover:text-fg transition-colors rounded"
                               >
                                 <MoreVertical size={17} />
                               </button>
-
-                              <AnimatePresence>
-                                {openMenuId === exp.id && (
-                                  <motion.div
-                                    initial={{ opacity: 0, scale: 0.95, y: -4 }}
-                                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                                    exit={{ opacity: 0, scale: 0.95, y: -4 }}
-                                    className="absolute right-0 top-8 z-50 w-48 bg-card border border-fg/10 rounded-xl shadow-2xl overflow-hidden"
-                                  >
-                                    <button
-                                      onClick={() => {
-                                        setOpenMenuId(null);
-                                        navigate(`/welcome/${exp.id}`);
-                                      }}
-                                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-fg/5 transition-colors text-left"
-                                    >
-                                      <Eye size={15} className="text-fg/40" />
-                                      View Experience
-                                    </button>
-                                    <button
-                                      onClick={() => handleRegenerateQR(exp.id)}
-                                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-fg/5 transition-colors text-left"
-                                    >
-                                      <RefreshCw size={15} className="text-fg/40" />
-                                      Regenerate QR
-                                    </button>
-                                    {exp.QRcodeUrl && (
-                                      <button
-                                        onClick={() => handleCopyQR(exp.QRcodeUrl!)}
-                                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-fg/5 transition-colors text-left"
-                                      >
-                                        <Copy size={15} className="text-fg/40" />
-                                        Copy QR URL
-                                      </button>
-                                    )}
-                                    <div className="border-t border-fg/5" />
-                                    <button
-                                      onClick={(e) => handleDelete(e as any, exp.id)}
-                                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-red-500/10 text-red-400 transition-colors text-left"
-                                    >
-                                      <Trash2 size={15} />
-                                      Delete
-                                    </button>
-                                  </motion.div>
-                                )}
-                              </AnimatePresence>
                             </div>
                           </div>
                         </td>
@@ -328,6 +285,58 @@ const Dashboard: FC = () => {
           </div>
         </div>
       </main>
+
+      {/* More actions dropdown — rendered via portal to avoid table overflow clipping */}
+      {openMenuId && createPortal(
+        <div ref={menuRef}>
+          <AnimatePresence>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              style={{ position: "fixed", top: menuPos.top, left: menuPos.left, zIndex: 9999 }}
+              className="w-48 bg-card border border-fg/10 rounded-xl shadow-2xl overflow-hidden"
+            >
+              <button
+                onClick={() => {
+                  const id = openMenuId;
+                  setOpenMenuId(null);
+                  navigate(`/welcome/${id}`);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-fg/5 transition-colors text-left"
+              >
+                <Eye size={15} className="text-fg/40" />
+                View Experience
+              </button>
+              <button
+                onClick={() => handleRegenerateQR(openMenuId)}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-fg/5 transition-colors text-left"
+              >
+                <RefreshCw size={15} className="text-fg/40" />
+                Regenerate QR
+              </button>
+              {experiences.find((e: Experience) => e.id === openMenuId)?.QRcodeUrl && (
+                <button
+                  onClick={() => handleCopyQR(experiences.find((e: Experience) => e.id === openMenuId)!.QRcodeUrl!)}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-fg/5 transition-colors text-left"
+                >
+                  <Copy size={15} className="text-fg/40" />
+                  Copy QR URL
+                </button>
+              )}
+              <div className="border-t border-fg/5" />
+              <button
+                onClick={(e) => handleDelete(e as any, openMenuId)}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-red-500/10 text-red-400 transition-colors text-left"
+              >
+                <Trash2 size={15} />
+                Delete
+              </button>
+            </motion.div>
+          </AnimatePresence>
+        </div>,
+        document.body,
+      )}
 
       {/* Create Modal */}
       <AnimatePresence>

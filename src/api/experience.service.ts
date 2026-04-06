@@ -50,4 +50,7 @@ export const experienceService = {
   ) => {
     return await api.post(`/experience/${id}/feedback`, data);
   },
+  sendChatMessage: async (id: string, messages: any[]) => {
+    return await api.post(`/experience/${id}/chat`, { messages });
+  },
 };

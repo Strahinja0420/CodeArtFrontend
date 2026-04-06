@@ -14,12 +14,14 @@ import {
   Info,
   Star,
   Check,
+  MessageCircle,
 } from "lucide-react";
 import { useExperience } from "../hooks/useExperience";
 import { experienceService } from "../api/experience.service";
 import { useAuth } from "../context/AuthContext";
 import { getTranslations, langBcp47, type LangCode } from "../i18n/translations";
 import { translateFields } from "../i18n/translate";
+import ChatAssistant from "../components/ChatAssistant";
 import "@google/model-viewer";
 
 declare global {
@@ -65,6 +67,9 @@ const ExperienceView: FC = () => {
   const [comment, setComment] = useState("");
   const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+
+  // Chat State
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   useEffect(() => {
     if (id && !hasRecordedScan.current) {
@@ -386,6 +391,14 @@ const ExperienceView: FC = () => {
           <span className="text-[10px] font-medium">{t.showcase}</span>
         </button>
         <button
+          onClick={() => setIsChatOpen(true)}
+          className="flex flex-col items-center gap-1 text-fg/40 hover:text-accent transition-colors relative"
+        >
+          <div className="absolute -top-1 -right-2 w-2 h-2 rounded-full bg-accent animate-pulse" />
+          <MessageCircle size={22} />
+          <span className="text-[10px] font-medium">Ask AI</span>
+        </button>
+        <button
           onClick={() => navigate(`/experience/${id}/settings`)}
           className="flex flex-col items-center gap-1 text-fg/40 hover:text-accent transition-colors"
         >
@@ -393,6 +406,13 @@ const ExperienceView: FC = () => {
           <span className="text-[10px] font-medium">{t.settings}</span>
         </button>
       </div>
+
+      <ChatAssistant
+        experienceId={id!}
+        experienceTitle={experience.title}
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
+      />
     </div>
   );
 };
